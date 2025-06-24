@@ -2,29 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}MySite{% endblock %}</title>
+    <title>{% block title %}Auth System{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <nav class="bg-white shadow p-4 flex justify-between">
-        <a href="/" class="font-bold text-xl">MySite</a>
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <a href="/" class="font-bold text-xl text-blue-600">AuthSystem</a>
         <div>
             {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="mx-2">Profile</a>
-                <a href="{% url 'logout' %}" class="mx-2">Logout</a>
+                <a href="{% url 'profile' %}" class="mx-2 text-gray-700 hover:text-blue-600">Profile</a>
+                <form method="post" action="{% url 'logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="mx-2 text-red-600 hover:underline">Logout</button>
+                </form>
             {% else %}
-                <a href="{% url 'login' %}" class="mx-2">Login</a>
-                <a href="{% url 'register' %}" class="mx-2">Register</a>
+                <a href="{% url 'login' %}" class="mx-2 text-gray-700 hover:text-blue-600">Login</a>
+                <a href="{% url 'register' %}" class="mx-2 text-gray-700 hover:text-blue-600">Register</a>
             {% endif %}
         </div>
     </nav>
 
-    <div class="container mx-auto p-4">
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto p-4">
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
-    <footer class="bg-gray-200 text-center p-4 mt-8">
-        &copy; 2025 MySite | Built for Kenya
+    <!-- Footer -->
+    <footer class="bg-gray-200 text-center py-4 text-sm mt-auto">
+        &copy; {% now "Y" %} by Kenmax | 0799382984
     </footer>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
 </html>
