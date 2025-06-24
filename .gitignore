@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+.eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.cache
+nosetests.xml
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Django
+*.log
+local_settings.py
+.env
+db.sqlite3
+media/
+static/
+
+# IDE and editor settings
+.vscode/
+.idea/
+.project
+.directory
+.DS_Store
+
+# Virtual environment (if not already covered by env/ or venv/)
+.venv/
+
+# PyCharm specific
+.idea/
+
+# macOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+
+# Other common files to ignore
+*.bak
+*.swp
+*.swo
+*.tmp
