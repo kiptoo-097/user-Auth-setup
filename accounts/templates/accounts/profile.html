@@ -7,7 +7,7 @@
     <div class="grid md:grid-cols-2 gap-8">
         <!-- User Info Section -->
         <div class="bg-white p-6 rounded-xl shadow-md">
-            <div class="flex flex-col items-center text-center">
+            <div class="flex flex-col items-center">
                 {% if user.avatar %}
                     <img src="{{ user.avatar.url }}" class="w-32 h-32 rounded-full object-cover mb-4 border" alt="Avatar">
                 {% else %}
@@ -15,17 +15,36 @@
                         {{ user.first_name|default:"U"|slice:":1" }}{{ user.last_name|default:"N"|slice:":1" }}
                     </div>
                 {% endif %}
-                <h3 class="text-xl font-semibold text-gray-800">{{ user.first_name }} {{ user.last_name }}</h3>
-                <p class="text-gray-600">{{ user.phone_number }}</p>
-                {% if user.email %}
-                    <p class="text-gray-600">{{ user.email }}</p>
-                {% endif %}
-                {% if user.gender %}
-                    <p class="text-gray-500 capitalize">{{ user.get_gender_display }}</p>
-                {% endif %}
-                {% if user.bio %}
-                    <p class="mt-4 text-gray-600 italic">"{{ user.bio }}"</p>
-                {% endif %}
+
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ user.first_name }} {{ user.last_name }}</h3>
+
+                <div class="w-full space-y-3">
+                    <div class="flex justify-between border-b pb-1">
+                        <span class="text-gray-500 font-medium">📞 Phone:</span>
+                        <span class="text-gray-800 text-right">{{ user.phone_number }}</span>
+                    </div>
+
+                    {% if user.email %}
+                    <div class="flex justify-between border-b pb-1">
+                        <span class="text-gray-500 font-medium">📧 Email:</span>
+                        <span class="text-gray-800 text-right">{{ user.email }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if user.gender %}
+                    <div class="flex justify-between border-b pb-1">
+                        <span class="text-gray-500 font-medium">⚥ Gender:</span>
+                        <span class="text-gray-800 text-right capitalize">{{ user.get_gender_display }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if user.bio %}
+                    <div class="flex flex-col">
+                        <span class="text-gray-500 font-medium mb-1">📝 Bio:</span>
+                        <p class="text-gray-700 italic">{{ user.bio }}</p>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
@@ -33,25 +52,28 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h4 class="text-xl font-semibold mb-4 text-gray-800">Account Settings</h4>
 
-            <div class="space-y-4">
-                <a href="{% url 'password_reset' %}" class="text-sm text-left text-blue-600 block hover:underline">
+            <div class="space-y-4 text-left">
+                <a href="{% url 'password_reset' %}" class="text-sm text-blue-600 block hover:underline">
                     🔒 Reset Password
                 </a>
 
-                <button @click="open = true"
-                        class="text-sm text-left text-blue-600 block hover:underline">
+                <button @click="open = true" class="text-sm text-blue-600 block hover:underline">
                     ✏️ Update Profile
                 </button>
 
-                <a href="{% url 'logout' %}" class="text-sm text-left text-blue-600 block hover:underline">
-                    🚪 Logout
-                </a>
+                <form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button type="submit" class="text-sm text-left text-blue-600 block hover:underline">
+    🚪 Logout
+  </button>
+</form>
+
 
                 <form action="{% url 'delete_account' %}" method="post" class="pt-2">
                     {% csrf_token %}
                     <button type="submit"
                             onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.');"
-                            class="text-sm text-left text-red-600 hover:underline">
+                            class="text-sm text-red-600 block hover:underline">
                         🗑️ Delete My Account
                     </button>
                 </form>
