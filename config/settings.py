@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 
     'accounts',
     'core',
+    'navigation',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'navigation.context_processors.navbar_links',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -96,3 +98,7 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
 # Sites Framework
 SITE_ID = 1
+
+TEMPLATES[0]['OPTIONS']['context_processors'].append(
+    'navigation.context_processors.navbar_links'
+)
