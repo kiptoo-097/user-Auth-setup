@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', core_views.home, name='home'),  
     path('accounts/', include('accounts.urls')),
+    path('nav/', include('navigation.urls', namespace='navigation')),
 ]
 
 # Serve media files (like avatars) in development only

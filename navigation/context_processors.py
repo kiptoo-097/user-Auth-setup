@@ -1,5 +1,9 @@
-from .models import NavLink
+from .models import Category
 
 def navbar_links(request):
-    navlinks = NavLink.objects.prefetch_related('dropdowns').all()
-    return {'navlinks': navlinks}
+    return {
+        'navigation_categories': Category.objects.filter(
+            is_active=True,
+            show_in_navbar=True
+        ).prefetch_related('subcategories').order_by('-order', 'name')
+    }

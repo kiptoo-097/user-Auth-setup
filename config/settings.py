@@ -24,7 +24,8 @@ INSTALLED_APPS = [
 
     'accounts',
     'core',
-    'navigation',
+    'navigation.apps.NavigationConfig',
+    
 ]
 
 MIDDLEWARE = [
@@ -49,7 +50,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'navigation.context_processors.navbar_links',
+                'navigation.context_processors.navbar_links',               
                 'django.contrib.messages.context_processors.messages',
             ],
         },

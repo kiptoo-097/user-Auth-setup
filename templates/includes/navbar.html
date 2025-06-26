@@ -1,7 +1,56 @@
-<nav class="bg-white shadow px-4 py-3" x-data="{ open: false }">
+<!-- includes/navbar.html -->
+<nav class="bg-white shadow px-4 py-3" x-data="{ open: false, dropdown: null }">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
         <!-- Logo -->
-        <a href="/" class="text-xl font-bold text-blue-600">AuthSystem</a>
+        <a href="/" class="text-xl font-bold text-blue-600">AuthSystem.</a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden lg:flex items-center space-x-8">
+            <!-- Categories -->
+            <div class="flex space-x-6">
+                {% for category in categories %}
+                    {% if category.subcategories.all %}
+                        <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                            <button class="text-gray-700 hover:text-blue-600 flex items-center">
+                                {{ category.name }}
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+                            
+                            <!-- Dropdown menu -->
+                            <div x-show="open" x-cloak 
+                                 class="absolute z-10 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                                {% for subcategory in category.subcategories.all %}
+                                    <a href="{% url 'subcategory' subcategory.slug %}" 
+                                       class="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                                        {{ subcategory.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'category' category.slug %}" class="text-gray-700 hover:text-blue-600">
+                            {{ category.name }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <!-- Auth Links -->
+            <div class="flex space-x-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="text-gray-700 hover:text-blue-600">Profile</a>
+                    <form method="post" action="{% url 'logout' %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-600 hover:underline">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600">Login</a>
+                    <a href="{% url 'register' %}" class="text-gray-700 hover:text-blue-600">Register</a>
+                {% endif %}
+            </div>
+        </div>
 
         <!-- Mobile Menu Button -->
         <div class="lg:hidden">
@@ -14,80 +63,51 @@
                 </svg>
             </button>
         </div>
-
-        <!-- Desktop Navigation -->
-        <div class="hidden lg:flex space-x-4 items-center">
-            {% for link in navlinks %}
-                {% if link.is_dropdown %}
-                    <div class="relative group">
-                        <button class="text-gray-700 hover:text-blue-600 font-medium focus:outline-none">
-                            {{ link.name }}
-                        </button>
-                        <div class="absolute left-0 mt-2 bg-white border shadow-lg rounded z-50 min-w-[10rem] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
-                            {% for sub in link.dropdowns.all %}
-                                {% with sub.url as sub_url %}
-                                    {% url sub_url as resolved_sub_url %}
-                                    <a href="{{ resolved_sub_url|default:sub_url }}" class="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700">
-                                        {{ sub.name }}
-                                    </a>
-                                {% endwith %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% else %}
-                    {% with link.url as url_name %}
-                        {% url url_name as resolved_url %}
-                        <a href="{{ resolved_url|default:url_name }}" class="text-gray-700 hover:text-blue-600">{{ link.name }}</a>
-                    {% endwith %}
-                {% endif %}
-            {% endfor %}
-        </div>
-
-        <!-- Auth Links (desktop) -->
-        <div class="hidden lg:flex space-x-4">
-            {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="text-gray-700 hover:text-blue-600">Profile</a>
-                <form method="post" action="{% url 'logout' %}" class="inline">
-                    {% csrf_token %}
-                    <button type="submit" class="text-red-600 hover:underline">Logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600">Login</a>
-                <a href="{% url 'register' %}" class="text-gray-700 hover:text-blue-600">Register</a>
-            {% endif %}
-        </div>
     </div>
 
-    <!-- Mobile Navigation -->
+    <!-- Mobile Menu -->
     <div class="lg:hidden mt-4 space-y-2 px-2" x-show="open" x-cloak>
-        {% for link in navlinks %}
-            {% if link.is_dropdown %}
-                <div>
-                    <span class="block font-semibold text-gray-700">{{ link.name }}</span>
-                    {% for sub in link.dropdowns.all %}
-                        {% with sub.url as sub_url %}
-                            {% url sub_url as resolved_sub_url %}
-                            <a href="{{ resolved_sub_url|default:sub_url }}" class="block pl-4 py-1 text-sm text-gray-600 hover:text-blue-600">{{ sub.name }}</a>
-                        {% endwith %}
-                    {% endfor %}
-                </div>
-            {% else %}
-                {% with link.url as url_name %}
-                    {% url url_name as resolved_url %}
-                    <a href="{{ resolved_url|default:url_name }}" class="block text-gray-700 hover:text-blue-600">{{ link.name }}</a>
-                {% endwith %}
-            {% endif %}
+        <!-- Mobile Categories -->
+        {% for category in categories %}
+            <div class="border-t border-gray-200 pt-2">
+                {% if category.subcategories.all %}
+                    <button @click="dropdown === '{{ category.slug }}' ? dropdown = null : dropdown = '{{ category.slug }}'" 
+                            class="w-full flex justify-between items-center text-gray-700 hover:text-blue-600 py-2">
+                        <span>{{ category.name }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path x-show="dropdown !== '{{ category.slug }}'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            <path x-show="dropdown === '{{ category.slug }}'" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                    </button>
+                    
+                    <div x-show="dropdown === '{{ category.slug }}'" x-cloak class="pl-4 space-y-2 py-1">
+                        {% for subcategory in category.subcategories.all %}
+                            <a href="{% url 'subcategory' subcategory.slug %}" 
+                               class="block text-gray-600 hover:text-blue-600 py-1">
+                                {{ subcategory.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <a href="{% url 'category' category.slug %}" class="block text-gray-700 hover:text-blue-600 py-2">
+                        {{ category.name }}
+                    </a>
+                {% endif %}
+            </div>
         {% endfor %}
 
-        {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="block text-gray-700 hover:text-blue-600">Profile</a>
-            <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="block text-red-600 hover:underline">Logout</button>
-            </form>
-        {% else %}
-            <a href="{% url 'login' %}" class="block text-gray-700 hover:text-blue-600">Login</a>
-            <a href="{% url 'register' %}" class="block text-gray-700 hover:text-blue-600">Register</a>
-        {% endif %}
+        <!-- Mobile Auth Links -->
+        <div class="border-t border-gray-200 pt-2 mt-2">
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="block text-gray-700 hover:text-blue-600 py-1">Profile</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="block text-red-600 hover:underline py-1">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="block text-gray-700 hover:text-blue-600 py-1">Login</a>
+                <a href="{% url 'register' %}" class="block text-gray-700 hover:text-blue-600 py-1">Register</a>
+            {% endif %}
+        </div>
     </div>
 </nav>
